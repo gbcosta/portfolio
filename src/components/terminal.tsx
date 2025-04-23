@@ -1,33 +1,39 @@
-const Comment = ({ children }: { children: string }) => {
+import { ChangeEvent, KeyboardEvent, ReactNode, useState } from "react";
+
+const Menu = () => {
   return (
-    <span className="text-zinc-500">
-      {"//"}
-      {children}
-    </span>
-  );
-};
-const Variable = ({
-  children,
-  name,
-  comment,
-}: {
-  children: string;
-  name: string;
-  comment?: string;
-}) => {
-  return (
-    <div>
-      {comment ? <Comment>{comment}</Comment> : <></>}
-      <p>
-        <span className="text-rose-600">const </span>
-        <span className="text-white">{name} </span>
-        <span className="text-white">= </span>
-        <span className="text-emerald-400">{children}</span>
-      </p>
+    <div className="flex flex-col text-blue-500">
+      <span className="text-green-500">Gabriel@guest:{"~$"}</span>
+      <span className="cursor-default">
+        <a>About me</a>
+      </span>
+      <span className="cursor-default">
+        <a>Projects</a>
+      </span>
+      <span className="cursor-default">
+        <a>Contact</a>
+      </span>
     </div>
   );
 };
+
+const ErrorMessage = ({ input }: { input: string }) => {
+  return (
+    <div className="flex flex-col text-red-600">
+      <span className="text-green-500">Gabriel@guest:{"~$"}</span>
+      <span>
+        {input} : The term '{input}' is not recognized as the name of a cmdlet,
+        function, script file, or operable program. Check the spelling of the
+        name or, if a path was included, verify that the path is correct and try
+        again.
+      </span>
+    </div>
+  );
+};
+
 export const Terminal = () => {
+  const [input, setInput] = useState<string>("");
+  const [messages, setMessages] = useState<Array<ReactNode>>([]);
   return (
     <div
       className="bg-gray-950 max-w-[800px] w-full h-[600px] font-[Ubuntu_Mono]
@@ -56,12 +62,29 @@ export const Terminal = () => {
           to showcase my skills and projects. Navigate through this digital
           terminal interface to explore my work.
         </p>
-        <span>Gabriel@guest:{"~$"}</span>
-        <span className="text-white">{" ls"}</span>
-        <div className="flex flex-col text-blue-500">
-          <span>About me</span>
-          <span>Projects</span>
-          <span>Contact</span>
+        {messages}
+        <div className="flex flex-row gap-2 text-white">
+          <label className="text-green-500">Gabriel@guest:{"~$"}</label>
+          <input
+            className="outline-none w-full"
+            value={input}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => {
+              setInput(e.target.value);
+            }}
+            onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+              if (e.key == "Enter") {
+                if (input.trim() == "ls") {
+                  setMessages([...messages, <Menu />]);
+                } else if (input.trim() == "clear") {
+                  setMessages([]);
+                } else {
+                  setMessages([...messages, <ErrorMessage input={input} />]);
+                }
+
+                setInput("");
+              }
+            }}
+          />
         </div>
       </div>
     </div>
